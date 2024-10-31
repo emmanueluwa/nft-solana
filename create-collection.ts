@@ -46,7 +46,7 @@ const transaction = await createNft(umi, {
   mint: collectionMint,
   name: "Best Collection",
   symbol: "BC",
-  uri: "https://...",
+  uri: "https://raw.githubusercontent.com/emmanueluwa/nft-solana/refs/heads/main/something.json",
   sellerFeeBasisPoints: percentAmount(0),
   isCollection: true,
 });
