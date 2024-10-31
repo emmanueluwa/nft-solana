@@ -1,15 +1,10 @@
 import {
-  createNft,
-  fetchDigitalAsset,
+  findMetadataPda,
   mplTokenMetadata,
+  verifyCollectionV1,
 } from "@metaplex-foundation/mpl-token-metadata";
 import { createUmi } from "@metaplex-foundation/umi-bundle-defaults";
-import {
-  generateSigner,
-  keypairIdentity,
-  percentAmount,
-  publicKey,
-} from "@metaplex-foundation/umi";
+import { keypairIdentity, publicKey } from "@metaplex-foundation/umi";
 import {
   airdropIfRequired,
   getExplorerLink,
@@ -44,29 +39,19 @@ const collectionAddress = publicKey(
   "6MYyii9MMA8KANjixa9u9ToVoVypQdrShudS3MycyzEa"
 );
 
-console.log("creating nft...");
+const nftAddress = publicKey("GQcrEKrT3ob9GVxiVQMjwJGhtXs6cg1MtGw83bBJfiSZ");
 
-const mint = generateSigner(umi);
-
-const transaction = await createNft(umi, {
-  mint,
-  name: "Best NFT",
-  uri: "https://raw.githubusercontent.com/emmanueluwa/nft-solana/refs/heads/main/nft.json",
-  sellerFeeBasisPoints: percentAmount(0),
-  collection: {
-    key: collectionAddress,
-    verified: false,
-  },
+const transaction = await verifyCollectionV1(umi, {
+  metadata: findMetadataPda(umi, { mint: nftAddress }),
+  collectionMint: collectionAddress,
+  authority: umi.identity,
 });
-await transaction.sendAndConfirm(umi);
-
-//fetch nft
-const createdNft = await fetchDigitalAsset(umi, mint.publicKey);
+transaction.sendAndConfirm(umi);
 
 console.log(
-  `created nft :) Address: ${getExplorerLink(
+  `NFT verified :) , nft address: ${nftAddress} verified as member of collection: ${collectionAddress}:D, see explorer at ${getExplorerLink(
     "address",
-    createdNft.mint.publicKey,
+    nftAddress,
     "devnet"
   )}`
 );
